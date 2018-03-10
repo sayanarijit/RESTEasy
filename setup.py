@@ -21,7 +21,7 @@ setup(
     description='REST API calls made easier',
     long_description=long_description,
     url='https://github.com/rapidstack/RESTEasy',
-    download_url='https://github.com/rapidstack/RESTEasy/archive/{}.tar.gz'.format(VERSION),
+    download_url='https://github.com/rapidstack/RESTEasy/archive/%s.tar.gz' % VERSION,
     author='Arijit Basu',
     author_email='sayanarijit@gmail.com',
     license='MIT',
