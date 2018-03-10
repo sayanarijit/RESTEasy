@@ -35,7 +35,7 @@ api =  RESTEasy(base_url='https://jobs.github.com')
 positions = api.route('positions.json')
 positions.get(description='python', full_time=True)
 
-# GET https://jobs.github.com/positions.json?description=python,full_time=1
+# GET https://jobs.github.com/positions.json?description=python&full_time=1
 ```
 
 * Example 2: Jikan animes
