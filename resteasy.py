@@ -95,7 +95,7 @@ class APIEndpoint(object):
             raise HTTPError(response.status_code, response.content)
 
         try:
-            return self.decoder(response.content.encode('utf-16'))
+            return self.decoder(response.content.decode('latin1'))
         except Exception:
             raise InvalidResponseError(response.content)
 
