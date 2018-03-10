@@ -14,11 +14,11 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 class HTTPError(Exception):
     def __init__(self, status, content):
-        Exception.__init__(self, 'Server returned HTTP status code: {}\n{}'.format(status, content))
+        Exception.__init__(self, 'Server returned HTTP status code: %s\n%s' % (status, content))
 
 class InvalidResponseError(Exception):
     def __init__(self, content):
-        Exception.__init__(self, 'Server returned JSON incompatible response:\n{}'.format(content))
+        Exception.__init__(self, 'Server returned incompatible response:\n'+content)
 
 
 class RESTEasy(object):
@@ -91,13 +91,14 @@ class APIEndpoint(object):
             response = self.session.request(method, self.endpoint,
                     data=self.encoder(kwargs), timeout=self.timeout)
 
+        content = response.content.decode('latin1')
         if response.status_code not in range(200,300):
-            raise HTTPError(response.status_code, response.content)
+            raise HTTPError(response.status_code, content)
 
         try:
-            return self.decoder(response.content.decode('latin1'))
+            return self.decoder(content)
         except Exception:
-            raise InvalidResponseError(response.content)
+            raise InvalidResponseError(content)
 
     def get(self, **kwargs): return self.do('GET', kwargs)
     def post(self, **kwargs): return self.do('POST', kwargs)
