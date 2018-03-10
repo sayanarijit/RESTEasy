@@ -137,7 +137,7 @@ Once debugging is set to 'True', Every HTTP call will return debug information i
 
 ## Exceptions
 
-* As is uses requests module to perform HTTP calls, most exceptions will be raised by requests module itself.
+* As this package uses requests module to perform HTTP calls, most exceptions will be raised by requests module itself.
 
 * In case API server returns HTTP status code outside the range of 200-299, It will raise ***resteasy.HTTPError***
 
