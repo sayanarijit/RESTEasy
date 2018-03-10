@@ -8,15 +8,15 @@
 REST API calls made easier
 
 
-### Installation
+## Installation
 
 ```bash
 pip install resteasy
 ```
 
-### Usage and examples
+## Usage and examples
 
-* Import
+### Import
 
 ```python
 from resteasy import RESTEasy, json
@@ -24,21 +24,24 @@ from resteasy import RESTEasy, json
 api = RESTEasy(base_url='https://api.example.com',
                auth=('user', '****'),
                verify=False, cert=None, timeout=None,
-               encoder=json.dumps, decoder=json.loads)
+               encoder=json.dumps, decoder=json.loads, debug=False)
 ```
 
-* Example 1: GitHub Jobs
+### Example 1: GitHub Jobs
 
 ```python
 api =  RESTEasy(base_url='https://jobs.github.com')
 
 positions = api.route('positions.json')
+
 positions.get(description='python', full_time=True)
+# or
+positions.do('GET', {'description': 'python', 'full_time': True})
 
 # GET https://jobs.github.com/positions.json?description=python&full_time=1
 ```
 
-* Example 2: Jikan animes
+### Example 2: Jikan animes
 
 ```python
 api = RESTEasy(base_url='https://api.jikan.me')
@@ -58,7 +61,7 @@ api.route('anime').route(1).do('GET')
 # GET https://api.jikan.me/anime/1
 ```
 
-* Example 3: Chuck Norris jokes
+### Example 3: Chuck Norris jokes
 
 ```python
 from __future__ import print_function
@@ -89,7 +92,7 @@ for category in categories:
     # GET https://api.chucknorris.io/jokes/random?category=<category>
 ```
 
-* Example 4: All methods: GET, POST, PUT, PATCH, DELETE
+### Example 4: All methods: GET, POST, PUT, PATCH, DELETE
 
 ```python
 api = RESTEasy(base_url='https://jsonplaceholder.typicode.com')
@@ -112,3 +115,21 @@ posts.route(1).patch(title='foo')
 posts.route(1).delete()
 ```
 
+## Debugging
+
+To enable debugging just pass or set ***debug=True***
+
+```python
+api.debug = True
+```
+
+Once debugging is set to 'True', Every HTTP call will return debug information instead of doing the actual request
+
+```python
+>>> posts.debug = True
+>>> posts.get(userId=1)
+{'endpoint': 'https://jsonplaceholder.typicode.com/posts',
+ 'kwargs': {'userId': 1},
+ 'method': 'GET',
+ 'session': <requests.sessions.Session at 0x7f1e8c8bfeb8>}
+```

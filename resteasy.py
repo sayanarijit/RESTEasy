@@ -26,7 +26,7 @@ class RESTEasy(object):
     REST session creator
     """
     def __init__(self, base_url, auth=None, verify=False, cert=None, timeout=None,
-                 encoder=json.dumps, decoder=json.loads):
+                 encoder=json.dumps, decoder=json.loads, debug=False):
         self.base_url = base_url
         self.session = requests.Session()
         self.session.auth = auth
@@ -39,6 +39,7 @@ class RESTEasy(object):
         self.timeout = timeout
         self.encoder = encoder
         self.decoder = decoder
+        self.debug = debug
 
     def route(self, *args):
         """
@@ -47,7 +48,7 @@ class RESTEasy(object):
         return APIEndpoint(
             endpoint=self.base_url + '/' + ('/'.join(map(str, args))),
             session=self.session, timeout=self.timeout,
-            encoder=self.encoder, decoder=self.decoder
+            encoder=self.encoder, decoder=self.decoder, debug=self.debug
         )
 
 
@@ -55,12 +56,14 @@ class APIEndpoint(object):
     """
     API endpoint
     """
-    def __init__(self, endpoint, session, timeout=None, encoder=json.dumps, decoder=json.loads):
+    def __init__(self, endpoint, session, timeout=None,
+                 encoder=json.dumps, decoder=json.loads, debug=False):
         self.endpoint = endpoint
         self.session = session
         self.timeout = timeout
         self.encoder = json.dumps
         self.decoder = json.loads
+        self.debug = debug
 
     def route(self, *args):
         """
@@ -69,14 +72,18 @@ class APIEndpoint(object):
         return APIEndpoint(
             endpoint=self.endpoint + '/' + ('/'.join(map(str, args))),
             session=self.session, timeout=self.timeout,
-            encoder=self.encoder, decoder=self.decoder
+            encoder=self.encoder, decoder=self.decoder, debug=self.debug
         )
 
-    def do(self, method, **kwargs):
+    def do(self, method, kwargs={}):
         """
         Do the HTTP request
         """
         method = method.upper()
+
+        if self.debug:
+            return dict(endpoint=self.endpoint, method=method, kwargs=kwargs, session=self.session)
+
         if method == 'GET':
             response = self.session.get(self.endpoint,
                     params=kwargs, timeout=self.timeout)
@@ -92,8 +99,8 @@ class APIEndpoint(object):
         except Exception:
             raise InvalidResponseError(response.content)
 
-    def get(self, **kwargs): return self.do('GET', **kwargs)
-    def post(self, **kwargs): return self.do('POST', **kwargs)
-    def put(self, **kwargs): return self.do('PUT', **kwargs)
-    def patch(self, **kwargs): return self.do('PATCH', **kwargs)
-    def delete(self, **kwargs): return self.do('DELETE', **kwargs)
+    def get(self, **kwargs): return self.do('GET', kwargs)
+    def post(self, **kwargs): return self.do('POST', kwargs)
+    def put(self, **kwargs): return self.do('PUT', kwargs)
+    def patch(self, **kwargs): return self.do('PATCH', kwargs)
+    def delete(self, **kwargs): return self.do('DELETE', kwargs)
