@@ -1,2 +1,2 @@
-pyOpenSSL=17.5.0
 requests==2.18.4
+cffi==1.11.5
