@@ -13,6 +13,6 @@ before_script:
     - pip install python-coveralls
     - pip install coverage
 script:
-    - coverage tests.py
+    - coverage run tests.py
 after_success:
     - coveralls
