@@ -35,9 +35,9 @@ api =  RESTEasy(base_url='https://jobs.github.com')
 
 positions = api.route('positions.json')
 
-positions.get(description='python', full_time=True)
+positions.get(description='python', full_time=1)
 # or
-positions.do('GET', {'description': 'python', 'full_time': True})
+positions.do('GET', {'description': 'python', 'full_time': 1})
 
 # GET https://jobs.github.com/positions.json?description=python&full_time=1
 ```
