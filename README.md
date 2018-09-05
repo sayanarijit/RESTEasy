@@ -26,6 +26,9 @@ api = RESTEasy(base_url='https://api.example.com',
                auth=('user', '****'),
                verify=False, cert=None, timeout=None,
                encoder=json.dumps, decoder=json.loads, debug=False)
+               
+# optional timeout
+api.timeout = 60
 ```
 
 ### Example 1: GitHub Jobs
