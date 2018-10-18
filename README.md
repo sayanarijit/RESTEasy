@@ -56,6 +56,8 @@ positions.do('GET', {'description': 'python', 'full_time': 1})
 ### Example 2: All methods: GET, POST, PUT, PATCH, DELETE
 
 ```python
+from resteasy import RESTEasy
+
 api = RESTEasy(base_url='https://jsonplaceholder.typicode.com')
 
 posts = api.route('posts')
@@ -80,6 +82,7 @@ posts.route(1).delete()
 
 ```python
 from __future__ import print_function
+from resteasy import RESTEasy
 
 api = RESTEasy(base_url='https://api.chucknorris.io')
 
@@ -109,7 +112,8 @@ for category in categories:
 
 ### Example 4: Using custom decoder: Parsing MyAnimeList HTML content
 
-```python    
+```python
+from resteasy import RESTEasy
 from html.parser import HTMLParser
 
 class MyHTMLParser(HTMLParser):
@@ -130,11 +134,11 @@ class MyHTMLParser(HTMLParser):
     
     def parse(self, content):
         '''Parse content and return object'''
+        self.found = False
+        self.anime = None
         self.feed(content)
-        return self
-    
-    def __repr__(self):
-        return 'Anime({})'.format(self.anime.strip() if self.found else '')
+        title = self.anime.strip().replace(' - MyAnimeList.net', '') if self.found else None
+        return dict(title=title)
 
 parser = MyHTMLParser()
 
