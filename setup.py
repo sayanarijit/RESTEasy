@@ -3,7 +3,7 @@ from codecs import open
 from os import path
 
 
-VERSION = 'v1.0.1'
+VERSION = 'v1.0.2'
 
 here = path.abspath(path.dirname(__file__))
 
@@ -20,6 +20,7 @@ setup(
     version=VERSION,
     description='REST API calls made easier',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/rapidstack/RESTEasy',
     download_url='https://github.com/rapidstack/RESTEasy/archive/%s.tar.gz' % VERSION,
     author='Arijit Basu',

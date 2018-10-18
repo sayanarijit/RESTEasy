@@ -13,18 +13,19 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 class HTTPError(Exception):
+    '''Status code returned by server not in range 200-299'''
     def __init__(self, status, content):
         Exception.__init__(self, 'Server returned HTTP status code: %s\n%s' % (status, content))
 
 class InvalidResponseError(Exception):
+    '''Data returned by server could not be decoded'''
     def __init__(self, content):
         Exception.__init__(self, 'Server returned incompatible response:\n'+content)
 
 
 class RESTEasy(object):
-    """
-    REST session creator
-    """
+    """REST API client session creator"""
+
     def __init__(self, base_url, auth=None, verify=False, cert=None, timeout=None,
                  encoder=json.dumps, decoder=json.loads, debug=False):
         self.base_url = base_url
@@ -42,9 +43,8 @@ class RESTEasy(object):
         self.debug = debug
 
     def route(self, *args):
-        """
-        Return endpoint object
-        """
+        """Return endpoint object"""
+
         return APIEndpoint(
             endpoint=self.base_url + '/' + ('/'.join(map(str, args))),
             session=self.session, timeout=self.timeout,
@@ -53,22 +53,20 @@ class RESTEasy(object):
 
 
 class APIEndpoint(object):
-    """
-    API endpoint
-    """
+    """API endpoint that supports CRUD operations"""
+
     def __init__(self, endpoint, session, timeout=None,
                  encoder=json.dumps, decoder=json.loads, debug=False):
         self.endpoint = endpoint
         self.session = session
         self.timeout = timeout
-        self.encoder = json.dumps
-        self.decoder = json.loads
+        self.encoder = encoder
+        self.decoder = decoder
         self.debug = debug
 
     def route(self, *args):
-        """
-        Return endpoint object
-        """
+        """Return endpoint object"""
+
         return APIEndpoint(
             endpoint=self.endpoint + '/' + ('/'.join(map(str, args))),
             session=self.session, timeout=self.timeout,
@@ -76,9 +74,8 @@ class APIEndpoint(object):
         )
 
     def do(self, method, kwargs={}):
-        """
-        Do the HTTP request
-        """
+        """Do the HTTP request"""
+
         method = method.upper()
 
         if self.debug:
