@@ -2,7 +2,7 @@
 
 REST API calls made easier
 
-[![PyPI version](https://img.shields.io/pypi/v/resteasy.svg)](https://pypi.python.org/pypi/resteasy)
+[![PyPI version](https://img.shields.io/pypi/v/resteasy.svg)](https://pypi.org/project/RESTEasy)
 [![Build Status](https://travis-ci.org/rapidstack/RESTEasy.svg?branch=master)](https://travis-ci.org/rapidstack/RESTEasy)
 [![Join the chat at https://gitter.im/rapidstack/RESTEasy](https://badges.gitter.im/rapidstack/RESTEasy.svg)](https://gitter.im/rapidstack/RESTEasy?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
