@@ -117,18 +117,15 @@ from resteasy import RESTEasy
 from html.parser import HTMLParser
 
 class MyHTMLParser(HTMLParser):
-    def __init__(self):
-        HTMLParser.__init__(self)
-        self.found = False
-        self.anime = None
-
+    '''Custom HTML parser'''
+    
     def handle_starttag(self, tag, attrs):
-        '''Inherited method'''
+        '''Overriding abstract method'''
         if tag == 'title' and not self.found:
             self.found = True
-    
+
     def handle_data(self, data):
-        '''Inherited method'''
+        '''Overriding abstract method'''
         if self.found and self.anime is None:
             self.anime = data
     

@@ -8,6 +8,7 @@ python:
 install:
     - pip install -r requirements.txt
     - python setup.py install
-script:
     - pip install pprint
-    - python tests.py
+script:
+    - python tests/crud_test.py
+    - python tests/custom_decoder_test.py
