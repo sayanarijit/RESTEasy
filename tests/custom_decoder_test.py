@@ -1,4 +1,4 @@
-from pprint import pprint
+import unittest
 from resteasy import RESTEasy
 try:
     from html.parser import HTMLParser
@@ -29,8 +29,14 @@ class MyHTMLParser(HTMLParser):
         return dict(title=title)
 
 
-parser = MyHTMLParser()
+class DecoderTest(unittest.TestCase):
 
-api = RESTEasy(base_url='https://myanimelist.net', decoder=parser.parse)
+    def test_decoder(self):
+        parser = MyHTMLParser()
+        api = RESTEasy(base_url='https://myanimelist.net', decoder=parser.parse)
+        res = api.route('anime', 1).get()
+        self.assertEqual(res, {'title': 'Cowboy Bebop'})
 
-pprint(api.route('anime', 1).get())
+
+if __name__ == '__main__':
+    unittest.main()

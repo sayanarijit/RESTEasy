@@ -9,7 +9,6 @@ from __future__ import absolute_import, unicode_literals
 import json
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 class HTTPError(Exception):
@@ -79,7 +78,7 @@ class APIEndpoint(object):
         method = method.upper()
 
         if self.debug:
-            return dict(endpoint=self.endpoint, method=method, kwargs=kwargs, session=self.session)
+            return dict(endpoint=self.endpoint, method=method, kwargs=kwargs, session=self.session, timeout=self.timeout)
 
         if method == 'GET':
             response = self.session.get(self.endpoint,

@@ -1,28 +1,63 @@
-from pprint import pprint
+import unittest
 from resteasy import RESTEasy
 
-api = RESTEasy(base_url='https://jsonplaceholder.typicode.com')
 
-posts = api.route('posts')
+api = RESTEasy(base_url='https://fakesite.com/api', timeout=60)
+tasks = api.route('tasks')
+tasks.debug = True
 
-### GET (fetch resources)
-pprint(posts.get())
-pprint(posts.get(userId=1))
-pprint(posts.route(1).get())
-pprint(posts.route(1).do('GET'))
-pprint(posts.route(1).do('GET', {'userId': 1}))
 
-### POST (create a resource)
-pprint(posts.post(title='foo', body='bar', userId=1))
-pprint(posts.do('POST', {'title': 'foo', 'body': 'bar', 'userId': 1}))
+class TestCRUD(unittest.TestCase):
 
-### PUT & PATCH (update a resource)
-pprint(posts.route(1).put(id=1, title='foo', body='bar', userId=1))
-pprint(posts.route(1).do('PUT', {'id': 1, 'title': 'foo', 'body': 'bar', 'userId': 1}))
+    def test_get(self):
+        '''GET requests'''
 
-pprint(posts.route(1).patch(title='foo'))
-pprint(posts.route(1).do('PATCH', {'title': 'foo'}))
+        req = tasks.get(filter='shop')
+        self.assertEqual(req['endpoint'], 'https://fakesite.com/api/tasks')
+        self.assertEqual(req['method'], 'GET')
+        self.assertEqual(req['kwargs'], {'filter': 'shop'})
+        self.assertEqual(req['timeout'], 60)
 
-### DELETE (delete a resource)
-pprint(posts.route(1).delete())
-pprint(posts.route(1).do('DELETE'))
+        tasks.timeout = 30
+        req = tasks.get()
+        self.assertEqual(req['timeout'], 30)
+        tasks.timeout = 60
+
+    def test_post(self):
+        '''POST requests'''
+
+        req = tasks.post(text='test note')
+        self.assertEqual(req['endpoint'], 'https://fakesite.com/api/tasks')
+        self.assertEqual(req['method'], 'POST')
+        self.assertEqual(req['kwargs'], {'text': 'test note'})
+        self.assertEqual(req['timeout'], 60)
+
+    def test_put(self):
+        '''POST requests'''
+
+        req = tasks.route(1).put(text='test note')
+        self.assertEqual(req['endpoint'], 'https://fakesite.com/api/tasks/1')
+        self.assertEqual(req['method'], 'PUT')
+        self.assertEqual(req['kwargs'], {'text': 'test note'})
+        self.assertEqual(req['timeout'], 60)
+
+    def test_patch(self):
+        '''PATCH requests'''
+
+        req = tasks.route(1).patch(text='test note')
+        self.assertEqual(req['endpoint'], 'https://fakesite.com/api/tasks/1')
+        self.assertEqual(req['method'], 'PATCH')
+        self.assertEqual(req['kwargs'], {'text': 'test note'})
+        self.assertEqual(req['timeout'], 60)
+
+    def test_delete(self):
+        '''DELETE requests'''
+
+        req = tasks.route(1).delete()
+        self.assertEqual(req['endpoint'], 'https://fakesite.com/api/tasks/1')
+        self.assertEqual(req['method'], 'DELETE')
+        self.assertEqual(req['timeout'], 60)
+
+
+if __name__ == '__main__':
+    unittest.main()
