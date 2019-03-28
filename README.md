@@ -153,6 +153,9 @@ api.route('anime').route(1).get()
 ### This is the last way I swear
 api.route('anime').route(1).do('GET')
 
+### Just kidding...
+api.route('anime').route(1).request('GET').json()
+
 # GET https://myanimelist.net/anime/1
 ```
 
@@ -170,9 +173,8 @@ Once debugging is set to 'True', Every HTTP call will return debug information i
 >>> posts.debug = True
 >>> posts.get(userId=1)
 {'endpoint': 'https://jsonplaceholder.typicode.com/posts',
- 'kwargs': {'userId': 1},
+ 'params': {'userId': 1},
  'method': 'GET',
- 'session': <requests.sessions.Session at 0x7f1e8c8bfeb8>,
  'timeout': None}
 ```
 
