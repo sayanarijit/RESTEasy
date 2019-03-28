@@ -13,10 +13,10 @@ from copy import deepcopy
 
 class RESTEasy(object):
     """REST API client session creator.
-    
+
     Arguments:
         base_url (str): Base URL of the API service.
-    
+
     Optional keyword arguments:
         encoder (callable): Encoder used to encode data to be posted.
         decoder (callable): Decoder used to decode returned data.
@@ -40,10 +40,10 @@ class RESTEasy(object):
 
     def route(self, *args):
         """Return endpoint object.
-        
+
         Arguments:
             args (list): Route URL path.
-        
+
         Returns:
             APIEndpoint: Object that supports CRUD queries.
         """
@@ -57,7 +57,7 @@ class RESTEasy(object):
 
 class APIEndpoint(object):
     """API endpoint supports CRUD queries.
-    
+
     Arguments:
         endpoint (str): Full URL of the API endpoint.
         session (requests.Session): A copy of `requests.Session` object.
@@ -80,10 +80,10 @@ class APIEndpoint(object):
 
     def route(self, *args):
         """Routes to a new endpoint.
-        
+
         Arguments:
             args (list): Route URL path.
-        
+
         Returns:
             APIEndpoint: Object that supports CRUD queries.
         """
@@ -91,16 +91,16 @@ class APIEndpoint(object):
         return APIEndpoint(
             endpoint='{}/{}'.format(
                 self.endpoint, ('/'.join(map(str, args)))),
-            session=self.session, timeout=self.timeout,
+            session=deepcopy(self.session), timeout=self.timeout,
             encoder=self.encoder, decoder=self.decoder, debug=self.debug)
 
     def request(self, method, **kwargs):
         """A shortcut to the `self.session.request` method.
-        
+
         Arguments:
             method (str): HTTP request method.
             kwargs (dict): Arguments to pass to the `self.session.request` method.
-        
+
         Returns:
             requests.Response|dict: Raw response object or dictionary in case of debug.
         """
@@ -110,11 +110,11 @@ class APIEndpoint(object):
 
     def do(self, method, kwargs={}):
         """Do the HTTP request.
-        
+
         Arguments:
             method (str): HTTP request method.
             kwargs (dict): Request parameters in case of GET/DELETE, else request data.
-        
+
         Returns:
             self.decoder(str): Decoded response object.
         """
