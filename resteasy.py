@@ -8,54 +8,69 @@ Website         : https://sayanarijit.github.io
 from __future__ import absolute_import, unicode_literals
 import json
 import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-
-
-class HTTPError(Exception):
-    '''Status code returned by server not in range 200-299'''
-    def __init__(self, status, content):
-        Exception.__init__(self, 'Server returned HTTP status code: %s\n%s' % (status, content))
-
-class InvalidResponseError(Exception):
-    '''Data returned by server could not be decoded'''
-    def __init__(self, content):
-        Exception.__init__(self, 'Server returned incompatible response:\n'+content)
+from copy import deepcopy
 
 
 class RESTEasy(object):
-    """REST API client session creator"""
+    """REST API client session creator.
+    
+    Arguments:
+        base_url (str): Base URL of the API service.
+    
+    Optional keyword arguments:
+        encoder (callable): Encoder used to encode data to be posted.
+        decoder (callable): Decoder used to decode returned data.
+        timeout (float): Default request timeout.
+        debug (bool): Toggle debug mode.
+        kwargs (dict): Extra arguments to update `requests.Session` object.
+    """
 
-    def __init__(self, base_url, auth=None, verify=False, cert=None, timeout=None,
-                 encoder=json.dumps, decoder=json.loads, debug=False):
+    def __init__(
+            self, base_url, encoder=json.dumps, decoder=json.loads,
+            timeout=None, debug=False, **kwargs):
         self.base_url = base_url
         self.session = requests.Session()
-        self.session.auth = auth
-        self.session.verify = verify
-        self.session.cert = cert
-        self.session.headers.update({
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        })
+        self.session.headers['Content-Type'] = 'application/json'
+        self.session.headers['Accept'] = 'application/json'
+        self.session.__dict__.update(kwargs)
         self.timeout = timeout
         self.encoder = encoder
         self.decoder = decoder
         self.debug = debug
 
     def route(self, *args):
-        """Return endpoint object"""
+        """Return endpoint object.
+        
+        Arguments:
+            args (list): Route URL path.
+        
+        Returns:
+            APIEndpoint: Object that supports CRUD queries.
+        """
 
         return APIEndpoint(
-            endpoint=self.base_url + '/' + ('/'.join(map(str, args))),
-            session=self.session, timeout=self.timeout,
-            encoder=self.encoder, decoder=self.decoder, debug=self.debug
-        )
+            endpoint='{}/{}'.format(
+                self.base_url, ('/'.join(map(str, args)))),
+            session=deepcopy(self.session), timeout=self.timeout,
+            encoder=self.encoder, decoder=self.decoder, debug=self.debug)
 
 
 class APIEndpoint(object):
-    """API endpoint that supports CRUD operations"""
+    """API endpoint supports CRUD queries.
+    
+    Arguments:
+        endpoint (str): Full URL of the API endpoint.
+        session (requests.Session): A copy of `requests.Session` object.
 
-    def __init__(self, endpoint, session, timeout=None,
-                 encoder=json.dumps, decoder=json.loads, debug=False):
+    Optional keyword arguments:
+        encoder (callable): Encoder used to encode data to be posted.
+        decoder (callable): Decoder used to decode returned data.
+        timeout (float): Default request timeout.
+        debug (bool): Toggle debug mode.
+    """
+
+    def __init__(self, endpoint, session, encoder=json.dumps,
+                 decoder=json.loads, timeout=None, debug=False):
         self.endpoint = endpoint
         self.session = session
         self.timeout = timeout
@@ -64,37 +79,59 @@ class APIEndpoint(object):
         self.debug = debug
 
     def route(self, *args):
-        """Return endpoint object"""
+        """Routes to a new endpoint.
+        
+        Arguments:
+            args (list): Route URL path.
+        
+        Returns:
+            APIEndpoint: Object that supports CRUD queries.
+        """
 
         return APIEndpoint(
-            endpoint=self.endpoint + '/' + ('/'.join(map(str, args))),
+            endpoint='{}/{}'.format(
+                self.endpoint, ('/'.join(map(str, args)))),
             session=self.session, timeout=self.timeout,
-            encoder=self.encoder, decoder=self.decoder, debug=self.debug
-        )
+            encoder=self.encoder, decoder=self.decoder, debug=self.debug)
+
+    def request(self, method, **kwargs):
+        """A shortcut to the `self.session.request` method.
+        
+        Arguments:
+            method (str): HTTP request method.
+            kwargs (dict): Arguments to pass to the `self.session.request` method.
+        
+        Returns:
+            requests.Response|dict: Raw response object or dictionary in case of debug.
+        """
+        if self.debug:
+            return dict(kwargs, endpoint=self.endpoint, method=method)
+        return self.session.request(method, self.endpoint, **kwargs)
 
     def do(self, method, kwargs={}):
-        """Do the HTTP request"""
+        """Do the HTTP request.
+        
+        Arguments:
+            method (str): HTTP request method.
+            kwargs (dict): Request parameters in case of GET/DELETE, else request data.
+        
+        Returns:
+            self.decoder(str): Decoded response object.
+        """
 
-        method = method.upper()
+        if method == 'GET' or method == 'DELETE':
+            response = self.request(method, params=kwargs, timeout=self.timeout)
+        else:
+            response = self.request(
+                method, data=self.encoder(kwargs), timeout=self.timeout)
 
         if self.debug:
-            return dict(endpoint=self.endpoint, method=method, kwargs=kwargs, session=self.session, timeout=self.timeout)
+            return response
 
-        if method == 'GET':
-            response = self.session.get(self.endpoint,
-                    params=kwargs, timeout=self.timeout)
-        else:
-            response = self.session.request(method, self.endpoint,
-                    data=self.encoder(kwargs), timeout=self.timeout)
+        response.raise_for_status()
 
         content = response.content.decode('latin1')
-        if response.status_code not in range(200,300):
-            raise HTTPError(response.status_code, content)
-
-        try:
-            return self.decoder(content)
-        except Exception:
-            raise InvalidResponseError(content)
+        return self.decoder(content)
 
     def get(self, **kwargs): return self.do('GET', kwargs)
     def post(self, **kwargs): return self.do('POST', kwargs)
