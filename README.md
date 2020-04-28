@@ -2,9 +2,10 @@
 
 REST API calls made easier
 
-[![PyPI version](https://img.shields.io/pypi/v/resteasy.svg)](https://pypi.org/project/RESTEasy)
-[![Build Status](https://travis-ci.org/rapidstack/RESTEasy.svg?branch=master)](https://travis-ci.org/rapidstack/RESTEasy)
-[![Join the chat at https://gitter.im/rapidstack/RESTEasy](https://badges.gitter.im/rapidstack/RESTEasy.svg)](https://gitter.im/rapidstack/RESTEasy?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![PyPI version](https://img.shields.io/pypi/v/resteasy.svg)](https://pypi.org/project/resteasy)
+[![Python versions](https://img.shields.io/pypi/v/resteasy.svg)](https://pypi.org/project/resteasy)
+[![Build status](https://travis-ci.org/sayanarijit/resteasy.svg?branch=master)](https://travis-ci.org/rapidstack/resteasy)
+[![Code coverage](https://codecov.io/gh/sayanarijit/resteasy/branch/master/graph/badge.svg)](https://codecov.io/gh/sayanarijit/resteasy)
 
 - [RESTEasy](#resteasy)
     - [Installation](#installation)
