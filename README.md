@@ -4,7 +4,7 @@ REST API calls made easier
 
 [![PyPI version](https://img.shields.io/pypi/v/resteasy.svg)](https://pypi.org/project/resteasy)
 [![Python versions](https://img.shields.io/pypi/v/resteasy.svg)](https://pypi.org/project/resteasy)
-[![Build status](https://travis-ci.org/sayanarijit/resteasy.svg?branch=master)](https://travis-ci.org/rapidstack/resteasy)
+[![Build status](https://travis-ci.org/sayanarijit/resteasy.svg?branch=master)](https://travis-ci.org/sayanarijit/resteasy)
 [![Code coverage](https://codecov.io/gh/sayanarijit/resteasy/branch/master/graph/badge.svg)](https://codecov.io/gh/sayanarijit/resteasy)
 
 - [RESTEasy](#resteasy)
