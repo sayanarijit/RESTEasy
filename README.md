@@ -31,7 +31,7 @@ pip install resteasy
 ```python
 from resteasy import RESTEasy, json
 
-api = RESTEasy(base_url='https://api.example.com',
+api = RESTEasy(endpoint='https://api.example.com',
                auth=('user', '****'),
                verify=False, cert=None, timeout=None,
                encoder=json.dumps, decoder=json.loads, debug=False)
@@ -43,7 +43,7 @@ api.timeout = 60
 ### Example 1: GitHub Jobs
 
 ```python
-api =  RESTEasy(base_url='https://jobs.github.com')
+api =  RESTEasy(endpoint='https://jobs.github.com')
 
 positions = api.route('positions.json')
 
@@ -59,7 +59,7 @@ positions.do('GET', {'description': 'python', 'full_time': 1})
 ```python
 from resteasy import RESTEasy
 
-api = RESTEasy(base_url='https://jsonplaceholder.typicode.com')
+api = RESTEasy(endpoint='https://jsonplaceholder.typicode.com')
 
 posts = api.route('posts')
 
@@ -85,7 +85,7 @@ posts.route(1).delete()
 from __future__ import print_function
 from resteasy import RESTEasy
 
-api = RESTEasy(base_url='https://api.chucknorris.io')
+api = RESTEasy(endpoint='https://api.chucknorris.io')
 
 
 ### Print a random joke
@@ -140,7 +140,7 @@ class MyHTMLParser(HTMLParser):
 
 parser = MyHTMLParser()
 
-api = RESTEasy(base_url='https://myanimelist.net', decoder=parser.parse)
+api = RESTEasy(endpoint='https://myanimelist.net', decoder=parser.parse)
 
 ### One way
 api.route('anime/1').get()
