@@ -33,7 +33,7 @@ class DecoderTest(unittest.TestCase):
 
     def test_decoder(self):
         parser = MyHTMLParser()
-        api = RESTEasy(base_url='https://myanimelist.net', decoder=parser.parse)
+        api = RESTEasy(endpoint='https://myanimelist.net', decoder=parser.parse)
         res = api.route('anime', 1).get()
         self.assertEqual(res, {'title': 'Cowboy Bebop'})
 

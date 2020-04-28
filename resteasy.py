@@ -15,67 +15,38 @@ class RESTEasy(object):
     """REST API client session creator.
 
     Arguments:
-        base_url (str): Base URL of the API service.
+        endpoint (str): Base URL of the API service.
 
     Optional keyword arguments:
         encoder (callable): Encoder used to encode data to be posted.
         decoder (callable): Decoder used to decode returned data.
         timeout (float): Default request timeout.
         debug (bool): Toggle debug mode.
+        session (request.Session): Use the given session instead of creating a new one.
         kwargs (dict): Extra arguments to update `requests.Session` object.
     """
 
     def __init__(
-            self, base_url, encoder=json.dumps, decoder=json.loads,
-            timeout=None, debug=False, **kwargs):
-        self.base_url = base_url
-        self.session = requests.Session()
-        self.session.headers['Content-Type'] = 'application/json'
-        self.session.headers['Accept'] = 'application/json'
+        self,
+        endpoint,
+        encoder=None,
+        decoder=None,
+        timeout=None,
+        debug=False,
+        session=None,
+        **kwargs
+    ):
+        self.endpoint = endpoint
+        if session is None:
+            self.session = requests.Session()
+            self.session.headers["Content-Type"] = "application/json"
+            self.session.headers["Accept"] = "application/json"
+        else:
+            self.session = session
         self.session.__dict__.update(kwargs)
         self.timeout = timeout
-        self.encoder = encoder
-        self.decoder = decoder
-        self.debug = debug
-
-    def route(self, *args):
-        """Return endpoint object.
-
-        Arguments:
-            args (list): Route URL path.
-
-        Returns:
-            APIEndpoint: Object that supports CRUD queries.
-        """
-
-        return APIEndpoint(
-            endpoint='{}/{}'.format(
-                self.base_url, ('/'.join(map(str, args)))),
-            session=deepcopy(self.session), timeout=self.timeout,
-            encoder=self.encoder, decoder=self.decoder, debug=self.debug)
-
-
-class APIEndpoint(object):
-    """API endpoint supports CRUD queries.
-
-    Arguments:
-        endpoint (str): Full URL of the API endpoint.
-        session (requests.Session): A copy of `requests.Session` object.
-
-    Optional keyword arguments:
-        encoder (callable): Encoder used to encode data to be posted.
-        decoder (callable): Decoder used to decode returned data.
-        timeout (float): Default request timeout.
-        debug (bool): Toggle debug mode.
-    """
-
-    def __init__(self, endpoint, session, encoder=json.dumps,
-                 decoder=json.loads, timeout=None, debug=False):
-        self.endpoint = endpoint
-        self.session = session
-        self.timeout = timeout
-        self.encoder = encoder
-        self.decoder = decoder
+        self.encoder = json.dumps if encoder is None else encoder
+        self.decoder = json.loads if decoder is None else decoder
         self.debug = debug
 
     def route(self, *args):
@@ -85,14 +56,17 @@ class APIEndpoint(object):
             args (list): Route URL path.
 
         Returns:
-            APIEndpoint: Object that supports CRUD queries.
+            RESTEasy: Object that supports CRUD queries.
         """
 
-        return APIEndpoint(
-            endpoint='{}/{}'.format(
-                self.endpoint, ('/'.join(map(str, args)))),
-            session=deepcopy(self.session), timeout=self.timeout,
-            encoder=self.encoder, decoder=self.decoder, debug=self.debug)
+        return type(self)(
+            endpoint="{}/{}".format(self.endpoint, "/".join(map(str, args))),
+            timeout=self.timeout,
+            encoder=self.encoder,
+            decoder=self.decoder,
+            debug=self.debug,
+            session=deepcopy(self.session),
+        )
 
     def request(self, method, **kwargs):
         """A shortcut to the `self.session.request` method.
@@ -108,7 +82,7 @@ class APIEndpoint(object):
             return dict(kwargs, endpoint=self.endpoint, method=method)
         return self.session.request(method, self.endpoint, **kwargs)
 
-    def do(self, method, kwargs={}):
+    def do(self, method, kwargs=None):
         """Do the HTTP request.
 
         Arguments:
@@ -118,23 +92,35 @@ class APIEndpoint(object):
         Returns:
             self.decoder(str): Decoded response object.
         """
+        if kwargs is None:
+            kwargs = {}
 
-        if method == 'GET' or method == 'DELETE':
+        if method == "GET" or method == "DELETE":
             response = self.request(method, params=kwargs, timeout=self.timeout)
         else:
             response = self.request(
-                method, data=self.encoder(kwargs), timeout=self.timeout)
+                method, data=self.encoder(kwargs), timeout=self.timeout
+            )
 
         if self.debug:
             return response
 
         response.raise_for_status()
 
-        content = response.content.decode('latin1')
+        content = response.content.decode("latin1")
         return self.decoder(content)
 
-    def get(self, **kwargs): return self.do('GET', kwargs)
-    def post(self, **kwargs): return self.do('POST', kwargs)
-    def put(self, **kwargs): return self.do('PUT', kwargs)
-    def patch(self, **kwargs): return self.do('PATCH', kwargs)
-    def delete(self, **kwargs): return self.do('DELETE', kwargs)
+    def get(self, **kwargs):
+        return self.do("GET", kwargs)
+
+    def post(self, **kwargs):
+        return self.do("POST", kwargs)
+
+    def put(self, **kwargs):
+        return self.do("PUT", kwargs)
+
+    def patch(self, **kwargs):
+        return self.do("PATCH", kwargs)
+
+    def delete(self, **kwargs):
+        return self.do("DELETE", kwargs)
