@@ -34,6 +34,7 @@ from resteasy import RESTEasy, json
 api = RESTEasy(endpoint='https://api.example.com',
                auth=('user', '****'),
                verify=False, cert=None, timeout=None,
+               allow_redirects=True,
                encoder=json.dumps, decoder=json.loads, debug=False)
                
 # optional timeout
