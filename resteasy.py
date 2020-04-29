@@ -10,6 +10,13 @@ import json
 import requests
 from copy import deepcopy
 
+GET = "GET"
+POST = "POST"
+PUT = "PUT"
+HEAD = "HEAD"
+PATCH = "PATCH"
+DELETE = "DELETE"
+
 
 class RESTEasy(object):
     """REST API client session creator.
@@ -26,6 +33,13 @@ class RESTEasy(object):
         session (request.Session): Use the given session instead of creating a new one.
         kwargs (dict): Extra arguments to update `requests.Session` object.
     """
+
+    GET = GET
+    POST = POST
+    PUT = PUT
+    PATCH = PATCH
+    HEAD = HEAD
+    DELETE = DELETE
 
     def __init__(
         self,
@@ -98,7 +112,7 @@ class RESTEasy(object):
         if kwargs is None:
             kwargs = {}
 
-        if method == "GET" or method == "DELETE":
+        if method == self.GET or method == self.DELETE:
             response = self.request(
                 method,
                 params=kwargs,
@@ -113,6 +127,11 @@ class RESTEasy(object):
                 allow_redirects=self.allow_redirects,
             )
 
+        if not self.debug and self.allow_redirects and "Location" in response.headers:
+            api = deepcopy(self)
+            api.endpoint = response.headers["Location"]
+            response = api.request(api.GET)
+
         if self.debug:
             return response
 
@@ -122,16 +141,16 @@ class RESTEasy(object):
         return self.decoder(content)
 
     def get(self, **kwargs):
-        return self.do("GET", kwargs)
+        return self.do(self.GET, kwargs)
 
     def post(self, **kwargs):
-        return self.do("POST", kwargs)
+        return self.do(self.POST, kwargs)
 
     def put(self, **kwargs):
-        return self.do("PUT", kwargs)
+        return self.do(self.PUT, kwargs)
 
     def patch(self, **kwargs):
-        return self.do("PATCH", kwargs)
+        return self.do(self.PATCH, kwargs)
 
     def delete(self, **kwargs):
-        return self.do("DELETE", kwargs)
+        return self.do(self.DELETE, kwargs)
