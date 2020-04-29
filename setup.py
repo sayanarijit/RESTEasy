@@ -3,7 +3,7 @@ from codecs import open
 from os import path
 
 
-VERSION = "v3.0.1"
+VERSION = "v3.1.0"
 
 here = path.abspath(path.dirname(__file__))
 
@@ -18,7 +18,9 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/rapidstack/RESTEasy",
-    download_url="https://github.com/rapidstack/RESTEasy/archive/%s.tar.gz" % VERSION,
+    download_url="https://github.com/rapidstack/RESTEasy/archive/{0}.tar.gz".format(
+        VERSION
+    ),
     author="Arijit Basu",
     author_email="sayanarijit@gmail.com",
     license="MIT",
@@ -52,5 +54,5 @@ setup(
     keywords="REST API client",
     packages=find_packages(exclude=["contrib", "docs", "tests"]),
     install_requires=["requests"],
-    extras_require={"dev": ["pytest", "pytest-cov"]}
+    extras_require={"dev": ["pytest", "pytest-cov"]},
 )

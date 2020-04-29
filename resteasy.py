@@ -21,6 +21,7 @@ class RESTEasy(object):
         encoder (callable): Encoder used to encode data to be posted.
         decoder (callable): Decoder used to decode returned data.
         timeout (float): Default request timeout.
+        allow_redirects (bool): Set to True by default.
         debug (bool): Toggle debug mode.
         session (request.Session): Use the given session instead of creating a new one.
         kwargs (dict): Extra arguments to update `requests.Session` object.
@@ -32,6 +33,7 @@ class RESTEasy(object):
         encoder=None,
         decoder=None,
         timeout=None,
+        allow_redirects=True,
         debug=False,
         session=None,
         **kwargs
@@ -45,6 +47,7 @@ class RESTEasy(object):
             self.session = session
         self.session.__dict__.update(kwargs)
         self.timeout = timeout
+        self.allow_redirects = allow_redirects
         self.encoder = json.dumps if encoder is None else encoder
         self.decoder = json.loads if decoder is None else decoder
         self.debug = debug
@@ -96,10 +99,18 @@ class RESTEasy(object):
             kwargs = {}
 
         if method == "GET" or method == "DELETE":
-            response = self.request(method, params=kwargs, timeout=self.timeout)
+            response = self.request(
+                method,
+                params=kwargs,
+                timeout=self.timeout,
+                allow_redirects=self.allow_redirects,
+            )
         else:
             response = self.request(
-                method, data=self.encoder(kwargs), timeout=self.timeout
+                method,
+                data=self.encoder(kwargs),
+                timeout=self.timeout,
+                allow_redirects=self.allow_redirects,
             )
 
         if self.debug:
