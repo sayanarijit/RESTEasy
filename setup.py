@@ -3,7 +3,7 @@ from codecs import open
 from os import path
 
 
-VERSION = "v3.1.0"
+VERSION = "v3.1.1"
 
 here = path.abspath(path.dirname(__file__))
 
@@ -54,5 +54,5 @@ setup(
     keywords="REST API client",
     packages=find_packages(exclude=["contrib", "docs", "tests"]),
     install_requires=["requests"],
-    extras_require={"dev": ["pytest", "pytest-cov"]},
+    extras_require={"dev": ["responses", "pytest", "pytest-cov"]},
 )

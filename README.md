@@ -153,10 +153,10 @@ api.route('anime', 1).get()
 api.route('anime').route(1).get()
 
 ### This is the last way I swear
-api.route('anime').route(1).do('GET')
+api.route('anime').route(1).do(api.GET)
 
 ### Just kidding...
-api.route('anime').route(1).request('GET').json()
+api.route('anime').route(1).request(api.GET).json()
 
 # GET https://myanimelist.net/anime/1
 ```
