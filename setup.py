@@ -3,7 +3,7 @@ from os import path
 
 from setuptools import find_packages, setup
 
-VERSION = "v3.1.1"
+VERSION = "v3.1.2"
 
 here = path.abspath(path.dirname(__file__))
 

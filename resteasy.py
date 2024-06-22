@@ -6,9 +6,11 @@ Website         : https://sayanarijit.github.io
 """
 
 from __future__ import absolute_import, unicode_literals
+
 import json
-import requests
 from copy import deepcopy
+
+import requests
 
 GET = "GET"
 POST = "POST"
